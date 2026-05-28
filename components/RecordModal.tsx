@@ -1,6 +1,7 @@
-import { ChevronLeft, ChevronRight } from 'lucide-react-native';
+import { ChevronLeft, ChevronRight, Trash2 } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import {
+  Alert,
   KeyboardAvoidingView,
   Modal,
   Platform,
@@ -38,6 +39,7 @@ const shiftDate = (dateStr: string, delta: number): string => {
 export default function RecordModal({ visible, onClose, initialDate, editRecord }: Props) {
   const addRecord = useRecordStore((s) => s.addRecord);
   const updateRecord = useRecordStore((s) => s.updateRecord);
+  const deleteRecord = useRecordStore((s) => s.deleteRecord);
 
   const isEdit = !!editRecord;
 
@@ -70,6 +72,20 @@ export default function RecordModal({ visible, onClose, initialDate, editRecord 
     onClose();
   };
 
+  const handleDelete = () => {
+    Alert.alert('기록 삭제', '이 기록을 삭제할까요?', [
+      { text: '취소', style: 'cancel' },
+      {
+        text: '삭제',
+        style: 'destructive',
+        onPress: () => {
+          deleteRecord(editRecord!.id);
+          handleClose();
+        },
+      },
+    ]);
+  };
+
   const handleSave = () => {
     if (minutes <= 0) return;
     if (isEdit) {
@@ -98,8 +114,18 @@ export default function RecordModal({ visible, onClose, initialDate, editRecord 
         pointerEvents="box-none"
       >
         <View style={styles.sheet}>
-          {/* 핸들바 */}
-          <View style={styles.handle} />
+          {/* 핸들바 + 삭제 */}
+          <View style={styles.handleRow}>
+            <View style={{ width: 34 }} />
+            <View style={styles.handle} />
+            {isEdit ? (
+              <TouchableOpacity onPress={handleDelete} style={styles.deleteBtn} hitSlop={8}>
+                <Trash2 size={18} color="#EF4444" />
+              </TouchableOpacity>
+            ) : (
+              <View style={{ width: 34 }} />
+            )}
+          </View>
 
           <ScrollView
             showsVerticalScrollIndicator={false}
@@ -189,13 +215,25 @@ const styles = StyleSheet.create({
     gap: 24,
     paddingBottom: 8,
   },
+  handleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 6,
+  },
   handle: {
     width: 40,
     height: 5,
     borderRadius: 3,
     backgroundColor: '#D6D0CB',
-    alignSelf: 'center',
-    marginBottom: 6,
+  },
+  deleteBtn: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: '#FEE2E2',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   dateRow: {
     flexDirection: 'row',
