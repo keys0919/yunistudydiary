@@ -2,20 +2,20 @@
   "name": "채윤's Diary",
   "short_name": "채윤 다이어리",
   "description": "채윤의 공부 시간 다이어리",
-  "start_url": "/chaeyun-diary/",
+  "start_url": "/yunistudydiary/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#FFFBF5",
   "theme_color": "#F97316",
   "icons": [
     {
-      "src": "/chaeyun-diary/icons/icon-192.png",
+      "src": "/yunistudydiary/icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable any"
     },
     {
-      "src": "/chaeyun-diary/icons/icon-512.png",
+      "src": "/yunistudydiary/icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable any"
