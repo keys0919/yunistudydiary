@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CalendarGrid from '../components/CalendarGrid';
+import RecordModal from '../components/RecordModal';
 import { useRecordStore, sumByDate } from '../store/useRecordStore';
 import { addMonths, formatYearMonth, todayYearMonth } from '../utils/dateUtils';
 
@@ -11,6 +12,7 @@ export default function CalendarScreen() {
   const { year: todayYear, month: todayMonth } = todayYearMonth();
   const [year, setYear] = useState(todayYear);
   const [month, setMonth] = useState(todayMonth);
+  const [modalVisible, setModalVisible] = useState(false);
 
   const records = useRecordStore((s) => s.records);
 
@@ -85,9 +87,15 @@ export default function CalendarScreen() {
       </ScrollView>
 
       {/* 플로팅 기록 버튼 */}
-      <TouchableOpacity style={styles.fab} activeOpacity={0.85}>
+      <TouchableOpacity
+        style={styles.fab}
+        activeOpacity={0.85}
+        onPress={() => setModalVisible(true)}
+      >
         <Plus size={26} color="#FFFFFF" strokeWidth={2.5} />
       </TouchableOpacity>
+
+      <RecordModal visible={modalVisible} onClose={() => setModalVisible(false)} />
     </SafeAreaView>
   );
 }
