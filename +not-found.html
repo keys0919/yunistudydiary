@@ -3,6 +3,12 @@
               window.addEventListener('load', function() {
                 navigator.serviceWorker.register('/yunistudydiary/sw.js');
               });
+              var reloading = false;
+              navigator.serviceWorker.addEventListener('controllerchange', function() {
+                if (reloading) return;
+                reloading = true;
+                window.location.reload();
+              });
             }
           </script><style id="react-native-stylesheet">[stylesheet-group="0"]{}
 body{margin:0;}
