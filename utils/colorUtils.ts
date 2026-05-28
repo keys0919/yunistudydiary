@@ -16,6 +16,14 @@ export const getIntensity = (minutes: number): number => {
   return 1.0;
 };
 
+// hex 색상 → rgba 문자열
+export const hexToRgba = (hex: string, opacity: number): string => {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+};
+
 // 날짜 → 시드 기반 색상 (year+month로 시드, 요일/날짜 규칙성 없음)
 export const getCalendarColor = (dateStr: string): string => {
   const [year, month, day] = dateStr.split('-').map(Number);
