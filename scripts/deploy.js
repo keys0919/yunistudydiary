@@ -30,7 +30,7 @@ try {
 if (!fs.existsSync(GIT_DIR)) {
   execSync('git init', { cwd: DIST });
   execSync('git remote add origin git@github.com:keys0919/yunistudydiary.git', { cwd: DIST });
-  execSync('git branch -M main', { cwd: DIST });
+  execSync('git branch -M gh-pages', { cwd: DIST });
 }
 
 // 5. sw.js 버전 주입 (캐시 무효화 핵심)
@@ -65,6 +65,6 @@ try {
   process.exit(0);
 }
 
-execSync('git push origin main --force', { cwd: DIST, stdio: 'inherit' });
+execSync('git push origin gh-pages --force', { cwd: DIST, stdio: 'inherit' });
 
 console.log('\n✓ 배포 완료. 앱 껐다 키면 자동 업데이트됩니다.\n');
