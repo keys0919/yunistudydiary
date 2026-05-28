@@ -1,6 +1,6 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { getCalendarCellColor, getCalendarColor } from '../utils/colorUtils';
-import { today } from '../utils/dateUtils';
+import { formatMinutes, today } from '../utils/dateUtils';
 
 type Props = {
   dateStr: string;
@@ -11,21 +11,13 @@ type Props = {
 
 const todayStr = today();
 
-const formatCellTime = (minutes: number): string => {
-  if (minutes <= 0) return '';
-  if (minutes < 60) return `${minutes}분`;
-  const h = Math.floor(minutes / 60);
-  const m = minutes % 60;
-  return m === 0 ? `${h}h` : `${h}h${m}분`;
-};
-
 export default function DayCell({ dateStr, totalMinutes, hasMemo, onPress }: Props) {
   const day = parseInt(dateStr.split('-')[2], 10);
   const accentColor = getCalendarColor(dateStr);
   const isToday = dateStr === todayStr;
 
   const bgColor = getCalendarCellColor(dateStr, totalMinutes);
-  const cellTime = formatCellTime(totalMinutes);
+  const cellTime = totalMinutes > 0 ? formatMinutes(totalMinutes) : '';
   const isDeep = totalMinutes > 60;
 
   return (
@@ -101,11 +93,9 @@ const styles = StyleSheet.create({
     color: '#D97048',
   },
   dot: {
-    position: 'absolute',
-    bottom: 4,
-    width: 4,
-    height: 4,
-    borderRadius: 2,
+    width: 5,
+    height: 5,
+    borderRadius: 2.5,
     opacity: 0.85,
   },
 });

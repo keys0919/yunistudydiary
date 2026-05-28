@@ -1,4 +1,4 @@
-import { Plus } from 'lucide-react-native';
+import { Pencil, Plus } from 'lucide-react-native';
 import {
   Modal,
   ScrollView,
@@ -8,6 +8,7 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
+import type { StudyRecord } from '../types';
 import { useRecordStore } from '../store/useRecordStore';
 import { getCalendarColor } from '../utils/colorUtils';
 import { formatMinutes } from '../utils/dateUtils';
@@ -25,9 +26,10 @@ type Props = {
   dateStr: string | null;
   onClose: () => void;
   onAddRecord: (dateStr: string) => void;
+  onEditRecord: (record: StudyRecord) => void;
 };
 
-export default function DayDetailSheet({ visible, dateStr, onClose, onAddRecord }: Props) {
+export default function DayDetailSheet({ visible, dateStr, onClose, onAddRecord, onEditRecord }: Props) {
   const records = useRecordStore((s) => s.records);
 
   if (!dateStr) return null;
@@ -78,12 +80,20 @@ export default function DayDetailSheet({ visible, dateStr, onClose, onAddRecord 
               showsVerticalScrollIndicator={false}
             >
               {dayRecords.map((r) => (
-                <View key={r.id} style={styles.recordItem}>
-                  <Text style={styles.recordDuration}>{formatMinutes(r.minutes)}</Text>
+                <TouchableOpacity
+                  key={r.id}
+                  style={styles.recordItem}
+                  onPress={() => onEditRecord(r)}
+                  activeOpacity={0.7}
+                >
+                  <View style={styles.recordRow}>
+                    <Text style={styles.recordDuration}>{formatMinutes(r.minutes)}</Text>
+                    <Pencil size={14} color="#C2BDB8" strokeWidth={2} />
+                  </View>
                   {r.memo ? (
                     <Text style={styles.recordMemo}>{r.memo}</Text>
                   ) : null}
-                </View>
+                </TouchableOpacity>
               ))}
             </ScrollView>
           </>
@@ -175,6 +185,11 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#F0EDE8',
     gap: 4,
+  },
+  recordRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   recordDuration: {
     fontSize: 15,

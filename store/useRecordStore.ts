@@ -6,6 +6,7 @@ import type { StudyRecord } from '../types';
 type RecordStore = {
   records: StudyRecord[];
   addRecord: (data: Omit<StudyRecord, 'id' | 'createdAt'>) => void;
+  updateRecord: (id: string, data: Partial<Omit<StudyRecord, 'id' | 'createdAt'>>) => void;
   deleteRecord: (id: string) => void;
   getByMonth: (year: number, month: number) => StudyRecord[];
   getRecent: (n: number) => StudyRecord[];
@@ -23,6 +24,12 @@ export const useRecordStore = create<RecordStore>()(
           createdAt: new Date().toISOString(),
         };
         set((state) => ({ records: [record, ...state.records] }));
+      },
+
+      updateRecord: (id, data) => {
+        set((state) => ({
+          records: state.records.map((r) => (r.id === id ? { ...r, ...data } : r)),
+        }));
       },
 
       deleteRecord: (id) => {

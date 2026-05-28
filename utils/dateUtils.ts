@@ -53,14 +53,14 @@ export const todayYearMonth = (): { year: number; month: number } => {
   return { year: now.getFullYear(), month: now.getMonth() + 1 };
 };
 
-// 분 → "1시간 30분" 또는 "45분"
+// 분 → "1h30분" / "1h" / "45분"
 export const formatMinutes = (minutes: number): string => {
   if (minutes <= 0) return '0분';
   const h = Math.floor(minutes / 60);
   const m = minutes % 60;
   if (h === 0) return `${m}분`;
-  if (m === 0) return `${h}시간`;
-  return `${h}시간 ${m}분`;
+  if (m === 0) return `${h}h`;
+  return `${h}h${m}분`;
 };
 
 // 최근 N일 dateStr 배열 (오늘 포함, 오래된 순)

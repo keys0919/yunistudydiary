@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight, Clock, Plus } from 'lucide-react-native';
 import { useMemo, useRef, useState } from 'react';
 import { Animated, PanResponder, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import type { StudyRecord } from '../types';
 import CalendarGrid from '../components/CalendarGrid';
 import DayDetailSheet from '../components/DayDetailSheet';
 import RecordModal from '../components/RecordModal';
@@ -18,6 +19,7 @@ export default function CalendarScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalInitialDate, setModalInitialDate] = useState<string | undefined>(undefined);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [editingRecord, setEditingRecord] = useState<StudyRecord | undefined>(undefined);
 
   const translateX = useRef(new Animated.Value(0)).current;
   const navRef = useRef({ year, month });
@@ -162,14 +164,24 @@ export default function CalendarScreen() {
         onAddRecord={(dateStr) => {
           setSelectedDate(null);
           setModalInitialDate(dateStr);
+          setEditingRecord(undefined);
+          setModalVisible(true);
+        }}
+        onEditRecord={(record) => {
+          setSelectedDate(null);
+          setEditingRecord(record);
           setModalVisible(true);
         }}
       />
 
       <RecordModal
         visible={modalVisible}
-        onClose={() => setModalVisible(false)}
+        onClose={() => {
+          setModalVisible(false);
+          setEditingRecord(undefined);
+        }}
         initialDate={modalInitialDate}
+        editRecord={editingRecord}
       />
     </SafeAreaView>
   );

@@ -12,6 +12,7 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
+import type { StudyRecord } from '../types';
 import { useRecordStore } from '../store/useRecordStore';
 import { toDateString, today } from '../utils/dateUtils';
 import TimeInput from './TimeInput';
@@ -20,6 +21,7 @@ type Props = {
   visible: boolean;
   onClose: () => void;
   initialDate?: string;
+  editRecord?: StudyRecord;
 };
 
 const formatDisplay = (dateStr: string): string => {
@@ -33,16 +35,29 @@ const shiftDate = (dateStr: string, delta: number): string => {
   return toDateString(d);
 };
 
-export default function RecordModal({ visible, onClose, initialDate }: Props) {
+export default function RecordModal({ visible, onClose, initialDate, editRecord }: Props) {
   const addRecord = useRecordStore((s) => s.addRecord);
+  const updateRecord = useRecordStore((s) => s.updateRecord);
 
-  const [date, setDate] = useState(initialDate ?? today());
-  const [minutes, setMinutes] = useState(30);
-  const [memo, setMemo] = useState('');
+  const isEdit = !!editRecord;
+
+  const [date, setDate] = useState(editRecord?.date ?? initialDate ?? today());
+  const [minutes, setMinutes] = useState(editRecord?.minutes ?? 30);
+  const [memo, setMemo] = useState(editRecord?.memo ?? '');
 
   useEffect(() => {
-    if (visible) setDate(initialDate ?? today());
-  }, [visible, initialDate]);
+    if (visible) {
+      if (editRecord) {
+        setDate(editRecord.date);
+        setMinutes(editRecord.minutes);
+        setMemo(editRecord.memo ?? '');
+      } else {
+        setDate(initialDate ?? today());
+        setMinutes(30);
+        setMemo('');
+      }
+    }
+  }, [visible, initialDate, editRecord]);
 
   const reset = () => {
     setDate(initialDate ?? today());
@@ -57,7 +72,11 @@ export default function RecordModal({ visible, onClose, initialDate }: Props) {
 
   const handleSave = () => {
     if (minutes <= 0) return;
-    addRecord({ date, minutes, memo: memo.trim() || undefined });
+    if (isEdit) {
+      updateRecord(editRecord!.id, { date, minutes, memo: memo.trim() || undefined });
+    } else {
+      addRecord({ date, minutes, memo: memo.trim() || undefined });
+    }
     handleClose();
   };
 
@@ -135,7 +154,7 @@ export default function RecordModal({ visible, onClose, initialDate }: Props) {
             activeOpacity={0.85}
             disabled={minutes <= 0}
           >
-            <Text style={styles.saveBtnText}>저장</Text>
+            <Text style={styles.saveBtnText}>{isEdit ? '수정' : '저장'}</Text>
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
