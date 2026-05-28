@@ -16,12 +16,21 @@ export default function RecordCard({ record }: Props) {
   const accentColor = getCalendarColor(record.date);
 
   return (
-    <View style={styles.card}>
+    <View
+      style={[
+        styles.card,
+        {
+          shadowColor: accentColor,
+        },
+      ]}
+    >
       <View style={[styles.accent, { backgroundColor: accentColor }]} />
       <View style={styles.body}>
         <View style={styles.topRow}>
           <Text style={styles.date}>{formatDate(record.date)}</Text>
-          <Text style={styles.duration}>{formatMinutes(record.minutes)}</Text>
+          <Text style={[styles.duration, { color: accentColor }]}>
+            {formatMinutes(record.minutes)}
+          </Text>
         </View>
         {record.memo ? (
           <Text style={styles.memo} numberOfLines={2}>
@@ -37,25 +46,24 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
     backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    marginBottom: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 6,
-    elevation: 2,
+    borderRadius: 18,
+    marginBottom: 12,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 3,
     overflow: 'hidden',
   },
   accent: {
-    width: 4,
-    borderTopLeftRadius: 16,
-    borderBottomLeftRadius: 16,
+    width: 5,
+    borderTopLeftRadius: 18,
+    borderBottomLeftRadius: 18,
   },
   body: {
     flex: 1,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    gap: 4,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    gap: 5,
   },
   topRow: {
     flexDirection: 'row',
@@ -65,16 +73,15 @@ const styles = StyleSheet.create({
   date: {
     fontSize: 13,
     fontWeight: '500',
-    color: '#78716C',
+    color: '#A8A29E',
   },
   duration: {
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: '700',
-    color: '#1C1917',
   },
   memo: {
     fontSize: 14,
     color: '#78716C',
-    lineHeight: 20,
+    lineHeight: 21,
   },
 });

@@ -6,11 +6,11 @@ import type { StudyRecord } from '../types';
 import { getRecentDates } from '../utils/dateUtils';
 
 const H_PAD = 16;
-const PAD_TOP = 12;
+const PAD_TOP = 14;
 const PAD_BOTTOM = 28;
 const PAD_LEFT = 8;
 const PAD_RIGHT = 8;
-const CHART_HEIGHT = 110;
+const CHART_HEIGHT = 120;
 const SVG_HEIGHT = CHART_HEIGHT + PAD_TOP + PAD_BOTTOM;
 
 type Props = {
@@ -89,12 +89,13 @@ export default function RhythmChart({ records }: Props) {
       <Svg width={svgWidth} height={SVG_HEIGHT}>
         <Defs>
           <LinearGradient id="grad" x1="0" y1="0" x2="0" y2="1">
-            <Stop offset="0" stopColor="#F97316" stopOpacity="0.18" />
+            <Stop offset="0" stopColor="#F97316" stopOpacity="0.22" />
+            <Stop offset="0.7" stopColor="#F97316" stopOpacity="0.05" />
             <Stop offset="1" stopColor="#F97316" stopOpacity="0" />
           </LinearGradient>
         </Defs>
 
-        {/* 그리드선 */}
+        {/* 그리드선 (점선) */}
         {gridLines.map((y, i) => (
           <SvgLine
             key={i}
@@ -102,8 +103,9 @@ export default function RhythmChart({ records }: Props) {
             y1={y}
             x2={PAD_LEFT + chartWidth}
             y2={y}
-            stroke="#E7E5E4"
+            stroke="#EAE6E1"
             strokeWidth="1"
+            strokeDasharray="3,4"
           />
         ))}
 
@@ -111,7 +113,7 @@ export default function RhythmChart({ records }: Props) {
         <Path d={fillPath} fill="url(#grad)" />
 
         {/* 라인 */}
-        <Path d={linePath} fill="none" stroke="#F97316" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+        <Path d={linePath} fill="none" stroke="#F97316" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
 
         {/* x축 레이블 */}
         {labelIndices.map((idx) => (
@@ -120,7 +122,7 @@ export default function RhythmChart({ records }: Props) {
             x={PAD_LEFT + idx * xStep}
             y={SVG_HEIGHT - 6}
             fontSize="11"
-            fill="#A8A29E"
+            fill="#B8B0A8"
             textAnchor="middle"
           >
             {formatLabel(dates[idx])}

@@ -1,9 +1,10 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react-native';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   KeyboardAvoidingView,
   Modal,
   Platform,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -18,6 +19,7 @@ import TimeInput from './TimeInput';
 type Props = {
   visible: boolean;
   onClose: () => void;
+  initialDate?: string;
 };
 
 const formatDisplay = (dateStr: string): string => {
@@ -31,15 +33,19 @@ const shiftDate = (dateStr: string, delta: number): string => {
   return toDateString(d);
 };
 
-export default function RecordModal({ visible, onClose }: Props) {
+export default function RecordModal({ visible, onClose, initialDate }: Props) {
   const addRecord = useRecordStore((s) => s.addRecord);
 
-  const [date, setDate] = useState(today());
+  const [date, setDate] = useState(initialDate ?? today());
   const [minutes, setMinutes] = useState(30);
   const [memo, setMemo] = useState('');
 
+  useEffect(() => {
+    if (visible) setDate(initialDate ?? today());
+  }, [visible, initialDate]);
+
   const reset = () => {
-    setDate(today());
+    setDate(initialDate ?? today());
     setMinutes(30);
     setMemo('');
   };
@@ -76,47 +82,53 @@ export default function RecordModal({ visible, onClose }: Props) {
           {/* 핸들바 */}
           <View style={styles.handle} />
 
-          {/* 날짜 선택 */}
-          <View style={styles.dateRow}>
-            <TouchableOpacity
-              onPress={() => setDate(shiftDate(date, -1))}
-              style={styles.dateArrow}
-              hitSlop={8}
-            >
-              <ChevronLeft size={18} color="#78716C" />
-            </TouchableOpacity>
-            <Text style={styles.dateText}>{formatDisplay(date)}</Text>
-            <TouchableOpacity
-              onPress={() => setDate(shiftDate(date, 1))}
-              style={styles.dateArrow}
-              hitSlop={8}
-            >
-              <ChevronRight size={18} color="#78716C" />
-            </TouchableOpacity>
-          </View>
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+            contentContainerStyle={styles.scrollContent}
+          >
+            {/* 날짜 선택 */}
+            <View style={styles.dateRow}>
+              <TouchableOpacity
+                onPress={() => setDate(shiftDate(date, -1))}
+                style={styles.dateArrow}
+                hitSlop={8}
+              >
+                <ChevronLeft size={18} color="#78716C" />
+              </TouchableOpacity>
+              <Text style={styles.dateText}>{formatDisplay(date)}</Text>
+              <TouchableOpacity
+                onPress={() => setDate(shiftDate(date, 1))}
+                style={styles.dateArrow}
+                hitSlop={8}
+              >
+                <ChevronRight size={18} color="#78716C" />
+              </TouchableOpacity>
+            </View>
 
-          {/* 시간 입력 */}
-          <View style={styles.section}>
-            <Text style={styles.sectionLabel}>공부 시간</Text>
-            <TimeInput value={minutes} onChange={setMinutes} />
-          </View>
+            {/* 시간 입력 */}
+            <View style={styles.section}>
+              <Text style={styles.sectionLabel}>공부 시간</Text>
+              <TimeInput value={minutes} onChange={setMinutes} />
+            </View>
 
-          {/* 메모 */}
-          <View style={styles.section}>
-            <Text style={styles.sectionLabel}>메모</Text>
-            <TextInput
-              style={styles.memoInput}
-              value={memo}
-              onChangeText={setMemo}
-              placeholder="무엇을 공부했나요?"
-              placeholderTextColor="#A8A29E"
-              multiline
-              numberOfLines={3}
-              textAlignVertical="top"
-            />
-          </View>
+            {/* 메모 */}
+            <View style={styles.section}>
+              <Text style={styles.sectionLabel}>메모</Text>
+              <TextInput
+                style={styles.memoInput}
+                value={memo}
+                onChangeText={setMemo}
+                placeholder="무엇을 공부했나요?"
+                placeholderTextColor="#A8A29E"
+                multiline
+                numberOfLines={3}
+                textAlignVertical="top"
+              />
+            </View>
+          </ScrollView>
 
-          {/* 저장 버튼 */}
+          {/* 저장 버튼 - 항상 하단 고정 */}
           <TouchableOpacity
             style={[styles.saveBtn, minutes <= 0 && styles.saveBtnDisabled]}
             onPress={handleSave}
@@ -134,84 +146,99 @@ export default function RecordModal({ visible, onClose }: Props) {
 const styles = StyleSheet.create({
   backdrop: {
     ...StyleSheet.absoluteFill,
-    backgroundColor: 'rgba(0, 0, 0, 0.35)',
+    backgroundColor: 'rgba(0, 0, 0, 0.42)',
   },
   sheetWrapper: {
     flex: 1,
     justifyContent: 'flex-end',
   },
   sheet: {
-    backgroundColor: '#FFFFFF',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    backgroundColor: '#FEFCF9',
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
     paddingHorizontal: 24,
-    paddingBottom: 40,
-    paddingTop: 12,
-    gap: 20,
+    paddingBottom: 32,
+    paddingTop: 16,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 8,
+    shadowOffset: { width: 0, height: -6 },
+    shadowOpacity: 0.1,
+    shadowRadius: 16,
+    elevation: 10,
+    maxHeight: '92%',
+  },
+  scrollContent: {
+    gap: 24,
+    paddingBottom: 8,
   },
   handle: {
-    width: 36,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: '#E7E5E4',
+    width: 40,
+    height: 5,
+    borderRadius: 3,
+    backgroundColor: '#D6D0CB',
     alignSelf: 'center',
-    marginBottom: 4,
+    marginBottom: 6,
   },
   dateRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 12,
+    gap: 16,
   },
   dateArrow: {
-    padding: 6,
+    padding: 8,
+    borderRadius: 20,
+    backgroundColor: '#F0EDE8',
   },
   dateText: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 17,
+    fontWeight: '700',
     color: '#1C1917',
-    minWidth: 120,
+    minWidth: 130,
     textAlign: 'center',
+    letterSpacing: -0.2,
   },
   section: {
     gap: 10,
   },
   sectionLabel: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#78716C',
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#A8A29E',
     textTransform: 'uppercase',
-    letterSpacing: 0.5,
+    letterSpacing: 1,
   },
   memoInput: {
     borderWidth: 1,
-    borderColor: '#E7E5E4',
-    borderRadius: 12,
-    padding: 12,
+    borderColor: '#EAE6E1',
+    borderRadius: 14,
+    padding: 14,
     fontSize: 15,
     color: '#1C1917',
     minHeight: 80,
-    backgroundColor: '#FAFAF9',
+    backgroundColor: '#FAF8F4',
   },
   saveBtn: {
     backgroundColor: '#F97316',
-    borderRadius: 14,
-    height: 52,
+    borderRadius: 16,
+    height: 54,
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 4,
+    shadowColor: '#EA580C',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 5,
   },
   saveBtnDisabled: {
     backgroundColor: '#E7E5E4',
+    shadowOpacity: 0,
+    elevation: 0,
   },
   saveBtnText: {
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: '800',
     color: '#FFFFFF',
+    letterSpacing: 0.3,
   },
 });

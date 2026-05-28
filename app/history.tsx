@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { ChevronLeft, ChevronRight } from 'lucide-react-native';
+import { BookOpen, ChevronLeft, ChevronRight } from 'lucide-react-native';
 import { useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -96,7 +96,9 @@ export default function HistoryScreen() {
         >
           {monthRecords.length === 0 ? (
             <View style={styles.emptyState}>
+              <BookOpen size={36} color="#D6D0CB" strokeWidth={1.5} />
               <Text style={styles.emptyText}>이 달의 기록이 없어요</Text>
+              <Text style={styles.emptySubText}>플로팅 버튼으로 기록을 추가해 보세요</Text>
             </View>
           ) : (
             monthRecords.map((r) => <RecordCard key={r.id} record={r} />)
@@ -113,19 +115,21 @@ export default function HistoryScreen() {
             <RhythmChart records={records} />
           </View>
 
-          {/* 월별 집계 */}
-          <View style={styles.statsGrid}>
-            <View style={styles.statCard}>
-              <Text style={styles.statValue}>{formatMinutes(stats.totalMinutes)}</Text>
-              <Text style={styles.statLabel}>총 공부시간</Text>
+          {/* 월별 집계 — 비대칭 레이아웃 */}
+          <View style={styles.statsContainer}>
+            <View style={styles.statCardPrimary}>
+              <Text style={styles.statLabelSmall}>총 공부시간</Text>
+              <Text style={styles.statValuePrimary}>{formatMinutes(stats.totalMinutes)}</Text>
             </View>
-            <View style={styles.statCard}>
-              <Text style={styles.statValue}>{stats.uniqueDays}일</Text>
-              <Text style={styles.statLabel}>공부한 날</Text>
-            </View>
-            <View style={styles.statCard}>
-              <Text style={styles.statValue}>{formatMinutes(stats.avgMinutes)}</Text>
-              <Text style={styles.statLabel}>하루 평균</Text>
+            <View style={styles.statsRow}>
+              <View style={styles.statCardSecondary}>
+                <Text style={styles.statValueSecondary}>{stats.uniqueDays}일</Text>
+                <Text style={styles.statLabel}>공부한 날</Text>
+              </View>
+              <View style={styles.statCardSecondary}>
+                <Text style={styles.statValueSecondary}>{formatMinutes(stats.avgMinutes)}</Text>
+                <Text style={styles.statLabel}>하루 평균</Text>
+              </View>
             </View>
           </View>
         </ScrollView>
@@ -144,51 +148,59 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F5F0EA',
   },
-  backBtn: { padding: 4 },
+  backBtn: {
+    padding: 6,
+    borderRadius: 20,
+    backgroundColor: '#F5F0EA',
+  },
   headerTitle: {
     fontSize: 17,
-    fontWeight: '600',
+    fontWeight: '700',
     color: '#1C1917',
+    letterSpacing: -0.2,
   },
   monthNav: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 12,
-    paddingVertical: 8,
+    paddingVertical: 12,
   },
   navBtn: { padding: 4 },
   monthTitle: {
-    fontSize: 16,
-    fontWeight: '700',
+    fontSize: 22,
+    fontFamily: 'Black Han Sans',
     color: '#1C1917',
-    minWidth: 100,
+    minWidth: 120,
     textAlign: 'center',
+    letterSpacing: 0,
   },
   tabBar: {
     flexDirection: 'row',
     marginHorizontal: 16,
-    marginTop: 4,
-    marginBottom: 12,
-    backgroundColor: '#F5F5F4',
-    borderRadius: 12,
+    marginTop: 2,
+    marginBottom: 14,
+    backgroundColor: '#F0EDE8',
+    borderRadius: 14,
     padding: 3,
     gap: 3,
   },
   tab: {
     flex: 1,
-    paddingVertical: 8,
-    borderRadius: 10,
+    paddingVertical: 9,
+    borderRadius: 12,
     alignItems: 'center',
   },
   tabActive: {
     backgroundColor: '#FFFFFF',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.08,
-    shadowRadius: 3,
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
     elevation: 2,
   },
   tabText: {
@@ -197,7 +209,7 @@ const styles = StyleSheet.create({
     color: '#A8A29E',
   },
   tabTextActive: {
-    fontWeight: '600',
+    fontWeight: '700',
     color: '#1C1917',
   },
   listContent: {
@@ -205,12 +217,19 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
   },
   emptyState: {
-    paddingTop: 60,
+    paddingTop: 64,
     alignItems: 'center',
+    gap: 10,
   },
   emptyText: {
-    fontSize: 14,
+    fontSize: 15,
+    fontWeight: '600',
     color: '#A8A29E',
+    marginTop: 4,
+  },
+  emptySubText: {
+    fontSize: 13,
+    color: '#C2BDB8',
   },
   analysisContent: {
     paddingBottom: 40,
@@ -221,39 +240,69 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   sectionLabel: {
-    fontSize: 12,
-    fontWeight: '600',
+    fontSize: 11,
+    fontWeight: '700',
     color: '#A8A29E',
     textTransform: 'uppercase',
-    letterSpacing: 0.5,
+    letterSpacing: 1,
   },
-  statsGrid: {
-    flexDirection: 'row',
+  statsContainer: {
     paddingHorizontal: 16,
     gap: 10,
   },
-  statCard: {
+  statCardPrimary: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 18,
+    padding: 20,
+    borderLeftWidth: 4,
+    borderLeftColor: '#F97316',
+    shadowColor: '#F97316',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.14,
+    shadowRadius: 10,
+    elevation: 4,
+    gap: 4,
+  },
+  statLabelSmall: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#A8A29E',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+  },
+  statValuePrimary: {
+    fontSize: 28,
+    fontWeight: '800',
+    color: '#1C1917',
+    letterSpacing: -0.5,
+  },
+  statsRow: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  statCardSecondary: {
     flex: 1,
     backgroundColor: '#FFFFFF',
-    borderRadius: 16,
+    borderRadius: 18,
     padding: 16,
     alignItems: 'center',
     gap: 4,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.06,
-    shadowRadius: 6,
+    shadowRadius: 8,
     elevation: 2,
   },
-  statValue: {
-    fontSize: 18,
-    fontWeight: '700',
+  statValueSecondary: {
+    fontSize: 22,
+    fontWeight: '800',
     color: '#1C1917',
+    letterSpacing: -0.3,
     textAlign: 'center',
   },
   statLabel: {
     fontSize: 11,
-    fontWeight: '500',
+    fontWeight: '600',
     color: '#A8A29E',
     textAlign: 'center',
   },

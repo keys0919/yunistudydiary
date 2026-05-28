@@ -1,37 +1,87 @@
-// 디자인 시스템 warm 팔레트 5색
-export const WARM_PALETTE = [
-  '#F59E0B', // Amber
-  '#F97316', // Coral
-  '#FB7185', // Rose
-  '#FDBA74', // Peach
-  '#EAB308', // Marigold
-] as const;
+export const calendarColors = {
+  peach: {
+    light: '#FFECE3',
+    medium: '#FFD2BF',
+    deep: '#FFB79A',
+  },
+  apricot: {
+    light: '#FFF0D2',
+    medium: '#FFE0A3',
+    deep: '#F8C96F',
+  },
+  butter: {
+    light: '#FFF6D1',
+    medium: '#FFE99A',
+    deep: '#F3D35F',
+  },
+  mint: {
+    light: '#E8F7EC',
+    medium: '#C9EFD4',
+    deep: '#A5E1B7',
+  },
+  sky: {
+    light: '#E7F5FB',
+    medium: '#C9E9F5',
+    deep: '#A8D9EB',
+  },
+  lavender: {
+    light: '#F1EAFE',
+    medium: '#DDCEF8',
+    deep: '#C5ADEE',
+  },
+} as const;
 
-// 공부 시간 → opacity (0 / 0.25 / 0.5 / 0.75 / 1.0)
-export const getIntensity = (minutes: number): number => {
-  if (minutes === 0) return 0;
-  if (minutes <= 30) return 0.25;
-  if (minutes <= 60) return 0.5;
-  if (minutes <= 90) return 0.75;
-  return 1.0;
-};
+export const baseColors = {
+  appBackground: '#FFF9EF',
+  surface: '#FFFFFF',
+  surfaceWarm: '#FFF3E3',
+  textPrimary: '#2B211B',
+  textSecondary: '#7C6A5F',
+  textTertiary: '#B9A99D',
+  border: '#EADDD1',
+  actionPrimary: '#FF956B',
+  actionSecondary: '#FFE8D8',
+} as const;
 
-// hex 색상 → rgba 문자열
+type CalendarDepth = 'none' | 'light' | 'medium' | 'deep';
+type CalendarColorKey = keyof typeof calendarColors;
+
+const colorKeys: CalendarColorKey[] = ['peach', 'apricot', 'butter', 'mint', 'sky', 'lavender'];
+
+export function getStudyDepth(minutes: number): CalendarDepth {
+  if (minutes <= 0) return 'none';
+  if (minutes <= 30) return 'light';
+  if (minutes <= 60) return 'medium';
+  return 'deep';
+}
+
+export function getCalendarColorKey(date: string): CalendarColorKey {
+  const [y, m, d] = date.split('-').map(Number);
+  // 연속된 날짜에서 hash 차이가 1씩만 나는 문제 방지 — Murmur finalizer 사용
+  let h = (y * 366 + m * 31 + d) | 0;
+  h ^= h >>> 16;
+  h = Math.imul(h, 0x85ebca6b) | 0;
+  h ^= h >>> 13;
+  h = Math.imul(h, 0xc2b2ae35) | 0;
+  h ^= h >>> 16;
+  return colorKeys[Math.abs(h) % colorKeys.length];
+}
+
+export function getCalendarCellColor(date: string, minutes: number): string {
+  const depth = getStudyDepth(minutes);
+  if (depth === 'none') return 'transparent';
+  const key = getCalendarColorKey(date);
+  return calendarColors[key][depth];
+}
+
+// accent 색 (deep) — 상세 시트, 도트 등에 사용
+export function getCalendarColor(dateStr: string): string {
+  return calendarColors[getCalendarColorKey(dateStr)].deep;
+}
+
 export const hexToRgba = (hex: string, opacity: number): string => {
   const r = parseInt(hex.slice(1, 3), 16);
   const g = parseInt(hex.slice(3, 5), 16);
   const b = parseInt(hex.slice(5, 7), 16);
   return `rgba(${r}, ${g}, ${b}, ${opacity})`;
-};
-
-// 날짜 → 시드 기반 색상 (year+month로 시드, 요일/날짜 규칙성 없음)
-export const getCalendarColor = (dateStr: string): string => {
-  const [year, month, day] = dateStr.split('-').map(Number);
-
-  // 월별 시드: 매달 다른 오프셋 생성
-  const monthSeed = (year * 12 + month) * 7;
-  // 날짜별 인덱스: 5개 색상 순환, 7의 배수 피하기 위해 월 오프셋 적용
-  const index = (monthSeed + day * 3) % WARM_PALETTE.length;
-
-  return WARM_PALETTE[index];
 };

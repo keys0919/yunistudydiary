@@ -1,11 +1,7 @@
 const CACHE_NAME = 'chaeyun-diary-__BUILD_VERSION__';
 
-self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) =>
-      cache.addAll(['/', '/manifest.json'])
-    )
-  );
+self.addEventListener('install', () => {
+  // cache.addAll 제거 — 잘못된 경로로 실패해서 install 자체가 막혔었음
   self.skipWaiting();
 });
 
