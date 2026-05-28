@@ -1,4 +1,4 @@
-const CACHE_NAME = 'chaeyun-diary-1779934081759';
+const CACHE_NAME = 'chaeyun-diary-1779934312436';
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
