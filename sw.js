@@ -1,4 +1,4 @@
-const CACHE_NAME = 'chaeyun-diary-1780014981318';
+const CACHE_NAME = 'chaeyun-diary-1780015332385';
 
 self.addEventListener('install', () => {
   // cache.addAll 제거 — 잘못된 경로로 실패해서 install 자체가 막혔었음
